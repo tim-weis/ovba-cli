@@ -1,0 +1,16 @@
+[package]
+name = "ovba-cli"
+version = "0.1.0"
+authors = ["Tim Weis <tim.weis@outlook.com>"]
+description = "Command line utility to inspect and extract VBA projects from Office Open XML documents"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = "3.0.0-beta.1"
+ovba = { path = ".." }
+sxd-document = "0.3"
+sxd-xpath = "0.4"
+thiserror = "1"
+zip = "0.5"
