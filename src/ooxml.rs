@@ -1,5 +1,4 @@
 #![forbid(unsafe_code)]
-#![warn(rust_2018_idioms)]
 
 //! Contains structures and functions to inspect Office Open XML documents and extract data.
 
