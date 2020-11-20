@@ -14,5 +14,4 @@ clap = "3.0.0-beta.1"
 ovba = { path = ".." }
 sxd-document = "0.3"
 sxd-xpath = "0.4"
-thiserror = "1"
 zip = "0.5"

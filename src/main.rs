@@ -1,11 +1,10 @@
 #![forbid(unsafe_code)]
 #![warn(rust_2018_idioms)]
 
-// mod error;
+mod error;
 mod ooxml;
-// mod ovba;
 
-// use error::Error;
+use error::Error;
 use ooxml::Document;
 
 use clap::Clap;
@@ -14,7 +13,10 @@ use std::{
     fs::write,
     io::{stdout, Write},
     path::PathBuf,
+    result,
 };
+
+pub(crate) type Result<T> = result::Result<T, Error>;
 
 #[derive(Clap, Debug)]
 #[clap(author, about, version)]
@@ -66,16 +68,15 @@ struct InfoArgs {
     input: Option<PathBuf>,
 }
 
-fn write_output(to: &Option<PathBuf>, data: &[u8]) -> Result<(), ovba::error::Error> {
+fn write_output(to: &Option<PathBuf>, data: &[u8]) -> Result<()> {
     match to {
-        Some(path_name) => write(path_name, data).map_err(|e| ovba::error::Error::Io(e.into())),
-        _ => stdout()
-            .write_all(data)
-            .map_err(|e| ovba::error::Error::Io(e.into())),
+        Some(path_name) => write(path_name, data)?,
+        _ => stdout().write_all(data)?,
     }
+    Ok(())
 }
 
-fn main() -> Result<(), ovba::error::Error> {
+fn main() -> Result<()> {
     let opts = Opts::parse();
 
     match opts.subcmd {
@@ -119,7 +120,7 @@ fn main() -> Result<(), ovba::error::Error> {
             if let Some(part_name) = part_name {
                 let part = doc.part(&part_name)?;
                 let project = ovba::open_project(part)?;
-                let entries = project.list();
+                let entries = project.list()?;
                 for entry in &entries {
                     println!("Entry: {} ({})", entry.0, entry.1);
                 }
