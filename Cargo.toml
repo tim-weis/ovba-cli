@@ -11,7 +11,7 @@ path = "src/main.rs"
 
 [dependencies]
 clap = "3.0.0-beta.1"
-ovba = { path = ".." }
+ovba = { path = "../ovba" }
 sxd-document = "0.3"
 sxd-xpath = "0.4"
 zip = "0.5"
