@@ -255,7 +255,8 @@ checksum = "afb2e1c3ee07430c2cf76151675e583e0f19985fa6efae47d6848a3e2c824f85"
 [[package]]
 name = "ovba"
 version = "0.1.0"
-source = "git+https://github.com/tim-weis/ovba?branch=develop#b50fed957d52174b0cd0b78da15f3be0b4a144c5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "33b8052a62578ace30589bdda6675480d92376787b8b967598d2f56550546145"
 dependencies = [
  "cfb",
  "codepage",
