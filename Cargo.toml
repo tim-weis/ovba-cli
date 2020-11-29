@@ -11,7 +11,7 @@ path = "src/main.rs"
 
 [dependencies]
 clap = "3.0.0-beta.1"
-ovba = { git = "https://github.com/tim-weis/ovba", branch = "develop" }
+ovba = "0.1"
 sxd-document = "0.3"
 sxd-xpath = "0.4"
 zip = "0.5"
