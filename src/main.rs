@@ -92,7 +92,6 @@ fn main() -> Result<()> {
                             let info = project.information()?;
                             let module_record = info
                                 .modules
-                                .modules
                                 .iter()
                                 .find(|module| module.name == module_name);
                             if let Some(module_record) = module_record {
