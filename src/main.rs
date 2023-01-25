@@ -7,7 +7,7 @@ mod ooxml;
 use error::Error;
 use ooxml::Document;
 
-use clap::Clap;
+use clap::Parser;
 
 use std::{
     fs::write,
@@ -18,14 +18,14 @@ use std::{
 
 pub(crate) type Result<T> = result::Result<T, Error>;
 
-#[derive(Clap, Debug)]
+#[derive(Parser, Debug)]
 #[clap(author, about, version)]
 struct Opts {
     #[clap(subcommand)]
     subcmd: SubCommand,
 }
 
-#[derive(Clap, Debug)]
+#[derive(Parser, Debug)]
 enum SubCommand {
     /// Dump contents of the VBA project file
     Dump(DumpArgs),
@@ -35,13 +35,13 @@ enum SubCommand {
     Info(InfoArgs),
 }
 
-#[derive(Clap, Debug)]
+#[derive(Parser, Debug)]
 struct DumpArgs {
     /// Input file. Reads from STDIN if omitted.
-    #[clap(short, long, parse(from_os_str))]
+    #[clap(short, long, value_hint = clap::ValueHint::FilePath)]
     input: Option<PathBuf>,
     /// Output file. Writes to STDOUT if omitted.
-    #[clap(short, long, parse(from_os_str))]
+    #[clap(short, long, value_hint = clap::ValueHint::FilePath)]
     output: Option<PathBuf>,
     /// Module to output.
     #[clap(long)]
@@ -50,21 +50,21 @@ struct DumpArgs {
     #[clap(long, requires("outdir"))]
     modules: bool,
     /// Output directory (must exist).
-    #[clap(long, parse(from_os_str))]
+    #[clap(long, value_hint = clap::ValueHint::DirPath)]
     outdir: Option<PathBuf>,
 }
 
-#[derive(Clap, Debug)]
+#[derive(Parser, Debug)]
 struct ListArgs {
     /// Input file. Reads from STDIN if omitted.
-    #[clap(short, long, parse(from_os_str))]
+    #[clap(short, long, value_hint = clap::ValueHint::FilePath)]
     input: Option<PathBuf>,
 }
 
-#[derive(Clap, Debug)]
+#[derive(Parser, Debug)]
 struct InfoArgs {
     /// Input file. Reads from STDIN if omitted.
-    #[clap(short, long, parse(from_os_str))]
+    #[clap(short, long, value_hint = clap::ValueHint::FilePath)]
     input: Option<PathBuf>,
 }
 
@@ -88,16 +88,15 @@ fn main() -> Result<()> {
                     let data = doc.part(part_name)?;
                     match dump_opts.module {
                         Some(module_name) => {
-                            let mut project = ovba::open_project(data)?;
-                            let info = project.information()?;
-                            let module_record = info
+                            let project = ovba::open_project(data)?;
+                            let module_record = project
                                 .modules
                                 .iter()
                                 .find(|module| module.name == module_name);
                             if let Some(module_record) = module_record {
                                 let stream_name = format!("/VBA\\{}", module_record.stream_name);
                                 let stream_data = project.decompress_stream_from(
-                                    &stream_name,
+                                    stream_name,
                                     module_record.text_offset as _,
                                 )?;
                                 write_output(&dump_opts.output, &stream_data)?;
@@ -131,9 +130,11 @@ fn main() -> Result<()> {
             let part_name = doc.vba_project_name()?;
             if let Some(part_name) = part_name {
                 let part = doc.part(&part_name)?;
-                let mut project = ovba::open_project(part)?;
-                let info = project.information()?;
-                println!("Version Independent Project Information:\n{:#?}", info);
+                let project = ovba::open_project(part)?;
+                println!(
+                    "Version Independent Project Information:\n{:#?}",
+                    project.information
+                );
             }
         }
     }

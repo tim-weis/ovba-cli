@@ -55,10 +55,8 @@ impl Document {
 
         let value = xpath.evaluate(&context, package.as_document().root())?;
         if let Value::Nodeset(nodeset) = &value {
-            if let Some(node) = nodeset.document_order_first() {
-                if let Node::Attribute(attribute) = &node {
-                    return Ok(Some(attribute.value().trim_start_matches('/').to_owned()));
-                }
+            if let Some(Node::Attribute(attribute)) = nodeset.document_order_first() {
+                return Ok(Some(attribute.value().trim_start_matches('/').to_owned()));
             }
         }
         Ok(None)
@@ -68,7 +66,7 @@ impl Document {
     pub(crate) fn part(&self, part_name: &str) -> Result<Vec<u8>> {
         let mut cursor = Cursor::new(&self.data);
         let mut archive = ZipArchive::new(&mut cursor)?;
-        let mut part = archive.by_name(&part_name)?;
+        let mut part = archive.by_name(part_name)?;
         let mut data = Vec::<u8>::new();
         part.read_to_end(&mut data)?;
         Ok(data)
