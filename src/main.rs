@@ -1,6 +1,6 @@
-#![forbid(unsafe_code)]
 #![warn(rust_2018_idioms)]
 
+mod encoding;
 mod error;
 mod ooxml;
 
@@ -68,10 +68,10 @@ struct InfoArgs {
     input: Option<PathBuf>,
 }
 
-fn write_output(to: &Option<PathBuf>, data: &[u8]) -> Result<()> {
+fn write_output(to: &Option<PathBuf>, data: impl AsRef<[u8]>) -> Result<()> {
     match to {
-        Some(path_name) => write(path_name, data)?,
-        _ => stdout().write_all(data)?,
+        Some(path_name) => write(path_name, data.as_ref())?,
+        _ => stdout().write_all(data.as_ref())?,
     }
     Ok(())
 }
@@ -99,7 +99,13 @@ fn main() -> Result<()> {
                                     stream_name,
                                     module_record.text_offset as _,
                                 )?;
-                                write_output(&dump_opts.output, &stream_data)?;
+                                let utf16 = encoding::to_utf16(
+                                    &stream_data,
+                                    project.information.code_page as u32,
+                                )
+                                .unwrap();
+                                let utf8 = encoding::to_utf8(&utf16).unwrap();
+                                write_output(&dump_opts.output, &utf8)?;
                             }
                         }
 
