@@ -14,7 +14,7 @@ clap = { version = "4.5", features = ["derive"] }
 ovba = "0.7"
 sxd-document = "0.3"
 sxd-xpath = "0.4"
-zip = "2.2"
+zip = "2.3"
 
 [dependencies.windows]
 version = "0.58.0"
